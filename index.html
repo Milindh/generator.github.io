@@ -207,7 +207,7 @@
             downloadPdfButton.style.display = 'none';
 
             try {
-                const response = await fetch('http://127.0.0.1:5000/api/generate-cover-letter', {
+                const response = await fetch(`${API_URL}/https://generator-github-io.onrender.com`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
