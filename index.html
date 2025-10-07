@@ -5,151 +5,291 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cover Letter Generator</title>
-    <link rel="icon" href="C:\Users\milin\OneDrive\Desktop\CV Gen\Screenshot 2024-09-19 232614.png" type="image/png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <meta name="description" content="AI-powered cover letter generator to create professional, tailored cover letters">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 40px;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
         }
 
         nav {
-            background-color: #2c3e50;
+            background-color: rgba(44, 62, 80, 0.95);
+            backdrop-filter: blur(10px);
             color: #fff;
-            padding: 10px 0;
+            padding: 15px 0;
             display: flex;
             align-items: center;
-        }
-
-        nav img {
-            height: 40px;
-            margin-left: 20px;
-        }
-
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            flex: 1;
-        }
-
-        nav ul li {
-            margin: 0 15px;
-        }
-
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 16px;
-            transition: color 0.3s;
-        }
-
-        nav ul li a:hover {
-            color: #3498db;
-        }
-
-        h1 {
-            color: #2c3e50;
-            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             margin-bottom: 30px;
         }
 
-        form,
-        #generated-letter {
+        .nav-content {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            font-size: 32px;
+        }
+
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .card {
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
             margin-bottom: 20px;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-family: 'Georgia', serif;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-family: 'Segoe UI', sans-serif;
+            color: #2c3e50;
+            font-size: 1.1em;
+        }
+
+        .input-info {
+            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+            font-style: italic;
         }
 
         textarea {
             width: 100%;
             padding: 15px;
             margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
             resize: vertical;
             font-family: 'Georgia', serif;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.6;
             color: #333;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            min-height: 150px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
         textarea::placeholder {
             font-style: italic;
-            color: #999;
+            color: #bbb;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.85em;
+            color: #7f8c8d;
+            margin-top: -15px;
+            margin-bottom: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         button {
-            background-color: #3498db;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
-            padding: 10px 20px;
+            padding: 12px 30px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
-            transition: background-color 0.3s;
-            margin-right: 10px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
 
-        button:hover {
-            background-color: #2980b9;
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.6);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         #download-pdf {
-            display: none;
-            background-color: #27ae60;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
         }
 
         #download-pdf:hover {
-            background-color: #2ecc71;
+            box-shadow: 0 6px 16px rgba(46, 204, 113, 0.6);
+        }
+
+        #copy-button {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        #copy-button:hover {
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.6);
         }
 
         #loading {
             display: none;
             text-align: center;
-            margin-top: 20px;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
         }
 
         .loader {
             border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
+            border-top: 5px solid #667eea;
             border-radius: 50%;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             animation: spin 1s linear infinite;
-            margin: 0 auto;
+            margin: 0 auto 20px;
         }
 
         @keyframes spin {
             0% {
                 transform: rotate(0deg);
             }
-
             100% {
                 transform: rotate(360deg);
+            }
+        }
+
+        .loading-text {
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        #generated-letter {
+            display: none;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .footer {
+            text-align: center;
+            color: #fff;
+            padding: 20px;
+            margin-top: 40px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            button {
+                width: 100%;
             }
         }
     </style>
@@ -157,57 +297,201 @@
 
 <body>
     <nav>
-        <img src="C:\Users\milin\OneDrive\Desktop\CV Gen\Screenshot 2024-09-19 232614.png" alt="Logo">
-        <ul></ul>
+        <div class="nav-content">
+            <div class="logo">
+                <span class="logo-icon">📝</span>
+                <span>Cover Letter Generator</span>
+            </div>
+        </div>
     </nav>
 
     <div class="container">
-        <h1>Cover Letter Generator</h1>
-        <form id="cover-letter-form">
-            <label for="job-description">Job Description:</label>
-            <textarea id="job-description" name="jobDescription" rows="10" required placeholder="Paste the job description here..."></textarea>
+        <h1>AI Cover Letter Generator</h1>
 
-            <label for="current-cover-letter">Your Current Cover Letter:</label>
-            <textarea id="current-cover-letter" name="coverLetter" rows="10" required placeholder="Paste your current cover letter or write a new one..."></textarea>
+        <div class="success-message" id="success-message">
+            ✓ Cover letter generated successfully!
+        </div>
 
-            <button type="submit">Generate Cover Letter</button>
-        </form>
+        <div class="error-message" id="error-message"></div>
+
+        <div class="card">
+            <form id="cover-letter-form">
+                <label for="job-description">Job Description</label>
+                <p class="input-info">Paste the complete job posting or description</p>
+                <textarea id="job-description" name="jobDescription" rows="10" required 
+                    placeholder="Paste the full job description here, including requirements, responsibilities, and company information..."
+                    maxlength="10000"></textarea>
+                <div class="char-count" id="job-char-count">0 / 10,000 characters</div>
+
+                <label for="current-cover-letter">Your Current Cover Letter</label>
+                <p class="input-info">Provide your existing cover letter or key points about your experience</p>
+                <textarea id="current-cover-letter" name="coverLetter" rows="10" required 
+                    placeholder="Paste your current cover letter or write key points about your background, experience, and why you're interested in this role..."
+                    maxlength="10000"></textarea>
+                <div class="char-count" id="cover-char-count">0 / 10,000 characters</div>
+
+                <div class="button-group">
+                    <button type="submit" id="submit-btn">
+                        <span id="submit-text">✨ Generate Cover Letter</span>
+                    </button>
+                </div>
+            </form>
+        </div>
 
         <div id="loading">
             <div class="loader"></div>
-            <p>Generating your cover letter...</p>
+            <p class="loading-text">Generating your professional cover letter...</p>
+            <p style="color: #7f8c8d; margin-top: 10px;">This may take 10-30 seconds</p>
         </div>
 
-        <div id="generated-letter">
-            <h2>Your Generated Cover Letter:</h2>
-            <textarea id="generated-textarea" rows="10"></textarea>
+        <div id="generated-letter" class="card">
+            <h2 style="color: #2c3e50; margin-bottom: 20px;">Your Generated Cover Letter</h2>
+            <textarea id="generated-textarea" rows="15" 
+                placeholder="Your generated cover letter will appear here..."></textarea>
+            <div class="char-count" id="generated-char-count">0 characters</div>
+            <div class="button-group" style="margin-top: 20px;">
+                <button id="copy-button">📋 Copy to Clipboard</button>
+                <button id="download-pdf">📥 Download as PDF</button>
+            </div>
         </div>
+    </div>
 
-        <button id="download-pdf" style="display: none;">Download as PDF</button>
+    <div class="toast" id="toast"></div>
+
+    <div class="footer">
+        <p>Powered by Google Gemini AI | Generate professional cover letters in seconds</p>
     </div>
 
     <script>
+        // ========================================
+        // CONFIGURATION
+        // ========================================
+        
+        // THIS WILL BE SET AUTOMATICALLY BY NETLIFY
+        // For local development, use: http://localhost:5000
+        // For production, this will be replaced with your Render backend URL
+        const API_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:5000' 
+            : 'https://YOUR-BACKEND-URL.onrender.com'; // REPLACE THIS with your actual Render URL
+
+        // ========================================
+        // DOM ELEMENTS
+        // ========================================
+        
         const form = document.getElementById('cover-letter-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const submitText = document.getElementById('submit-text');
         const loadingDiv = document.getElementById('loading');
+        const generatedLetterDiv = document.getElementById('generated-letter');
         const generatedTextarea = document.getElementById('generated-textarea');
-        let generatedCoverLetter = '';
-
         const downloadPdfButton = document.getElementById('download-pdf');
+        const copyButton = document.getElementById('copy-button');
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+        const toast = document.getElementById('toast');
+        
+        const jobDescTextarea = document.getElementById('job-description');
+        const coverLetterTextarea = document.getElementById('current-cover-letter');
+        const jobCharCount = document.getElementById('job-char-count');
+        const coverCharCount = document.getElementById('cover-char-count');
+        const generatedCharCount = document.getElementById('generated-char-count');
 
+        // ========================================
+        // UTILITY FUNCTIONS
+        // ========================================
+        
+        function showToast(message, duration = 3000) {
+            toast.textContent = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, duration);
+        }
+
+        function showError(message) {
+            errorMessage.textContent = '❌ ' + message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 8000);
+        }
+
+        function showSuccess() {
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        function updateCharCount(textarea, countElement) {
+            const count = textarea.value.length;
+            const max = textarea.maxLength;
+            countElement.textContent = `${count.toLocaleString()} / ${max.toLocaleString()} characters`;
+            
+            if (count > max * 0.9) {
+                countElement.style.color = '#e74c3c';
+            } else {
+                countElement.style.color = '#7f8c8d';
+            }
+        }
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+        
+        // Character counting
+        jobDescTextarea.addEventListener('input', () => {
+            updateCharCount(jobDescTextarea, jobCharCount);
+        });
+
+        coverLetterTextarea.addEventListener('input', () => {
+            updateCharCount(coverLetterTextarea, coverCharCount);
+        });
+
+        generatedTextarea.addEventListener('input', () => {
+            const count = generatedTextarea.value.length;
+            generatedCharCount.textContent = `${count.toLocaleString()} characters`;
+        });
+
+        // Form submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const jobDescription = document.getElementById('job-description').value;
-            const coverLetter = document.getElementById('current-cover-letter').value;
+            
+            const jobDescription = jobDescTextarea.value.trim();
+            const coverLetter = coverLetterTextarea.value.trim();
+
+            // Validation
+            if (jobDescription.length < 50) {
+                showError('Please provide a more detailed job description (at least 50 characters).');
+                return;
+            }
+
+            if (coverLetter.length < 100) {
+                showError('Please provide more information about your background (at least 100 characters).');
+                return;
+            }
+
+            // Prepare form data
             const formData = new URLSearchParams();
             formData.append('jobDescription', jobDescription);
             formData.append('coverLetter', coverLetter);
 
+            // Update UI
             loadingDiv.style.display = 'block';
+            generatedLetterDiv.style.display = 'none';
             generatedTextarea.value = '';
-            downloadPdfButton.style.display = 'none';
+            submitBtn.disabled = true;
+            submitText.textContent = '⏳ Generating...';
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+
+            // Scroll to loading indicator
+            loadingDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
             try {
-                const response = await fetch(`${API_URL}/https://generator-github-io.onrender.com`, {
+                const response = await fetch(`${API_URL}/api/generate-cover-letter`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded'
@@ -215,51 +499,103 @@
                     body: formData.toString()
                 });
 
-                if (!response.ok) {
-                    throw new Error('Network response was not ok: ' + response.statusText);
-                }
-
                 const result = await response.json();
 
+                if (!response.ok) {
+                    throw new Error(result.error || `Server error: ${response.status}`);
+                }
+
                 if (result.generatedCoverLetter) {
-                    generatedCoverLetter = result.generatedCoverLetter;
-                    generatedTextarea.value = generatedCoverLetter;
-                    downloadPdfButton.style.display = 'inline-block';
-                } else if (result.error) {
-                    generatedTextarea.value = 'Error: ' + result.error;
+                    generatedTextarea.value = result.generatedCoverLetter;
+                    updateCharCount(generatedTextarea, generatedCharCount);
+                    generatedLetterDiv.style.display = 'block';
+                    showSuccess();
+                    
+                    // Scroll to generated letter
+                    setTimeout(() => {
+                        generatedLetterDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 300);
                 } else {
-                    generatedTextarea.value = 'An unexpected error occurred.';
+                    throw new Error('No cover letter was generated. Please try again.');
                 }
 
             } catch (error) {
-                console.error('There was a problem with the fetch operation:', error);
-                generatedTextarea.value = 'An error occurred while generating the cover letter.';
+                console.error('Error:', error);
+                showError(error.message || 'Failed to generate cover letter. Please check your connection and try again.');
             } finally {
                 loadingDiv.style.display = 'none';
+                submitBtn.disabled = false;
+                submitText.textContent = '✨ Generate Cover Letter';
             }
         });
 
+        // Copy to clipboard
+        copyButton.addEventListener('click', async () => {
+            const text = generatedTextarea.value;
+            
+            if (!text) {
+                showToast('Nothing to copy!');
+                return;
+            }
+
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('✓ Copied to clipboard!');
+                copyButton.textContent = '✓ Copied!';
+                setTimeout(() => {
+                    copyButton.textContent = '📋 Copy to Clipboard';
+                }, 2000);
+            } catch (err) {
+                // Fallback for older browsers
+                generatedTextarea.select();
+                document.execCommand('copy');
+                showToast('✓ Copied to clipboard!');
+            }
+        });
+
+        // Download as PDF
         downloadPdfButton.addEventListener('click', () => {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            const generatedText = generatedTextarea.value; // Get the content from the text area
-            const splitText = doc.splitTextToSize(generatedText, 240);
-            let y = 20;
+            const generatedText = generatedTextarea.value;
+            
+            if (!generatedText) {
+                showToast('Nothing to download!');
+                return;
+            }
 
-            doc.setFont("Times New Roman");
+            // Set font
+            doc.setFont("times", "normal");
             doc.setFontSize(12);
 
-            splitText.forEach(line => {
+            // Split text to fit page width (170mm for margins)
+            const pageWidth = 170;
+            const lineHeight = 7;
+            const margin = 20;
+            let y = margin;
+
+            const lines = doc.splitTextToSize(generatedText, pageWidth);
+
+            lines.forEach(line => {
+                // Add new page if needed
                 if (y > 280) {
                     doc.addPage();
-                    y = 20;
+                    y = margin;
                 }
-                doc.text(line, 15, y);
-                y += 7;
+                doc.text(line, margin, y);
+                y += lineHeight;
             });
 
-            doc.save("Cover_Letter.pdf");
+            // Generate filename with timestamp
+            const timestamp = new Date().toISOString().split('T')[0];
+            doc.save(`Cover_Letter_${timestamp}.pdf`);
+            
+            showToast('✓ PDF downloaded successfully!');
         });
+
+        // Initialize character counts
+        updateCharCount(jobDescTextarea, jobCharCount);
+        updateCharCount(coverLetterTextarea, coverCharCount);
     </script>
 </body>
 
