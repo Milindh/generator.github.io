@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cover Letter Generator</title>
+    <link rel="icon" href="C:\Users\milin\OneDrive\Desktop\CV Gen\Screenshot 2024-09-19 232614.png" type="image/png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        nav {
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        nav img {
+            height: 40px;
+            margin-left: 20px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            flex: 1;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #3498db;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form,
+        #generated-letter {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-family: 'Georgia', serif;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        textarea::placeholder {
+            font-style: italic;
+            color: #999;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #download-pdf {
+            display: none;
+            background-color: #27ae60;
+        }
+
+        #download-pdf:hover {
+            background-color: #2ecc71;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <img src="C:\Users\milin\OneDrive\Desktop\CV Gen\Screenshot 2024-09-19 232614.png" alt="Logo">
+        <ul></ul>
+    </nav>
+
+    <div class="container">
+        <h1>Cover Letter Generator</h1>
+        <form id="cover-letter-form">
+            <label for="job-description">Job Description:</label>
+            <textarea id="job-description" name="jobDescription" rows="10" required placeholder="Paste the job description here..."></textarea>
+
+            <label for="current-cover-letter">Your Current Cover Letter:</label>
+            <textarea id="current-cover-letter" name="coverLetter" rows="10" required placeholder="Paste your current cover letter or write a new one..."></textarea>
+
+            <button type="submit">Generate Cover Letter</button>
+        </form>
+
+        <div id="loading">
+            <div class="loader"></div>
+            <p>Generating your cover letter...</p>
+        </div>
+
+        <div id="generated-letter">
+            <h2>Your Generated Cover Letter:</h2>
+            <textarea id="generated-textarea" rows="10"></textarea>
+        </div>
+
+        <button id="download-pdf" style="display: none;">Download as PDF</button>
+    </div>
+
+    <script>
+        const form = document.getElementById('cover-letter-form');
+        const loadingDiv = document.getElementById('loading');
+        const generatedTextarea = document.getElementById('generated-textarea');
+        let generatedCoverLetter = '';
+
+        const downloadPdfButton = document.getElementById('download-pdf');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const jobDescription = document.getElementById('job-description').value;
+            const coverLetter = document.getElementById('current-cover-letter').value;
+            const formData = new URLSearchParams();
+            formData.append('jobDescription', jobDescription);
+            formData.append('coverLetter', coverLetter);
+
+            loadingDiv.style.display = 'block';
+            generatedTextarea.value = '';
+            downloadPdfButton.style.display = 'none';
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/generate-cover-letter', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData.toString()
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+
+                const result = await response.json();
+
+                if (result.generatedCoverLetter) {
+                    generatedCoverLetter = result.generatedCoverLetter;
+                    generatedTextarea.value = generatedCoverLetter;
+                    downloadPdfButton.style.display = 'inline-block';
+                } else if (result.error) {
+                    generatedTextarea.value = 'Error: ' + result.error;
+                } else {
+                    generatedTextarea.value = 'An unexpected error occurred.';
+                }
+
+            } catch (error) {
+                console.error('There was a problem with the fetch operation:', error);
+                generatedTextarea.value = 'An error occurred while generating the cover letter.';
+            } finally {
+                loadingDiv.style.display = 'none';
+            }
+        });
+
+        downloadPdfButton.addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const generatedText = generatedTextarea.value; // Get the content from the text area
+            const splitText = doc.splitTextToSize(generatedText, 240);
+            let y = 20;
+
+            doc.setFont("Times New Roman");
+            doc.setFontSize(12);
+
+            splitText.forEach(line => {
+                if (y > 280) {
+                    doc.addPage();
+                    y = 20;
+                }
+                doc.text(line, 15, y);
+                y += 7;
+            });
+
+            doc.save("Cover_Letter.pdf");
+        });
+    </script>
+</body>
+
+</html>
