@@ -323,10 +323,10 @@
                     maxlength="10000"></textarea>
                 <div class="char-count" id="job-char-count">0 / 10,000 characters</div>
 
-                <label for="current-cover-letter">Your Current Cover Letter</label>
-                <p class="input-info">Provide your existing cover letter or key points about your experience</p>
+                <label for="current-cover-letter">Your Current Resume</label>
+                <p class="input-info">Provide your existing Resume or key points about your experience</p>
                 <textarea id="current-cover-letter" name="coverLetter" rows="10" required 
-                    placeholder="Paste your current cover letter or write key points about your background, experience, and why you're interested in this role..."
+                    placeholder="Paste your current resume or write key points about your background, experience, and why you're interested in this role..."
                     maxlength="10000"></textarea>
                 <div class="char-count" id="cover-char-count">0 / 10,000 characters</div>
 
@@ -367,12 +367,10 @@
         // CONFIGURATION
         // ========================================
         
-        // THIS WILL BE SET AUTOMATICALLY BY NETLIFY
-        // For local development, use: http://localhost:5000
-        // For production, this will be replaced with your Render backend URL
+        // Backend API URL - automatically detects environment
         const API_URL = window.location.hostname === 'localhost' 
             ? 'http://localhost:5000' 
-            : 'https://YOUR-BACKEND-URL.onrender.com'; // REPLACE THIS with your actual Render URL
+            : 'https://cover-letter-api-ndxs.onrender.com';
 
         // ========================================
         // DOM ELEMENTS
