@@ -7,10 +7,14 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-# Configure CORS - will be more specific in production
+# CRITICAL FIX: Update CORS to allow your Netlify domain
 CORS(app, resources={
     r"/api/*": {
-        "origins": ["http://localhost:*", "https://*.netlify.app"],
+        "origins": [
+            "http://localhost:*",
+            "https://*.netlify.app",
+            "https://cover-lettergenie.netlify.app"
+        ],
         "methods": ["POST", "GET", "OPTIONS"],
         "allow_headers": ["Content-Type"]
     }
@@ -106,9 +110,13 @@ def health_check():
         "timestamp": datetime.utcnow().isoformat()
     }), 200
 
-@app.route('/api/generate-cover-letter', methods=['POST'])
+@app.route('/api/generate-cover-letter', methods=['POST', 'OPTIONS'])
 def generate_cover_letter():
     """Main endpoint to generate cover letters"""
+    
+    # Handle preflight OPTIONS request
+    if request.method == 'OPTIONS':
+        return '', 204
     
     # Check if API key is configured
     if not GEMINI_API_KEY:
